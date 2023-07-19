@@ -13,7 +13,7 @@ public class DrawerFrame extends JFrame {   //DRawerFrame 컴포넌트
         setLocation(screenWidth/6, screenHeight/6);
         Image img = tk.getImage("ball.gif");    //컴포넌트 상단 아이콘, toolkit에서 제공함수
         setIconImage(img);
-        
+
         //Panel생성
         Container container = new Container();  //Content Pane(Frame의 부속객체인 작업공간) 생성
         canvas = new DrawerView();    //Panel 생성
@@ -42,7 +42,7 @@ public class DrawerFrame extends JFrame {   //DRawerFrame 컴포넌트
         JMenuItem openFile = new JMenuItem("열기 (O)");
         fileMenu.add(openFile);
         openFile.addActionListener( (e) ->     //새파일 버튼 클릭시, 람다 익스프레션 2_위 newFile(MenuItem)에서
-                // 이미 ActionListener인터페이스와 actionPerformed함수를 사용했기 때문에 해당 문법으로 재사용
+                        // 이미 ActionListener인터페이스와 actionPerformed함수를 사용했기 때문에 해당 문법으로 재사용
                 {
                     System.out.println("열기 (O)");
                     System.out.println("Hello");
@@ -66,6 +66,46 @@ public class DrawerFrame extends JFrame {   //DRawerFrame 컴포넌트
             }
         });
         //FileMenu 작성완료
+        //figure선택 메뉴 작성시작  (Figure선택해서 그리기)
+        JMenu figureMenu = new JMenu("그림 (F)");
+        menus.add(figureMenu);
+
+        JMenuItem figureBox = new JMenuItem("Box (B)");
+        figureMenu.add(figureBox);
+        figureBox.addActionListener((e) ->
+        {
+            canvas.setWhatToDraw(DrawerView.DRAW_BOX);  //canvas는 Panel객체 레퍼런스(를상속받은class, DrawerView는 해당 판넬객체 클래스명(static member이므로)
+        });
+        JMenuItem figureLine = new JMenuItem("Line (L)");
+        figureMenu.add(figureLine);
+        figureBox.addActionListener((e) ->
+        {
+            canvas.setWhatToDraw(DrawerView.DRAW_LINE);
+        });
+        //figureMenu 작성완료
+        //ToolMenu 작성시작     (dialog에서 좌표 입력해서 그리기)
+        JMenu toolMenu = new JMenu("도구 (T)");
+        menus.add(toolMenu);
+
+        JMenuItem modalTool = new JMenuItem("Modal (M)");
+        toolMenu.add(modalTool);
+        modalTool.addActionListener((e) ->
+        {
+            FigureDialog dialog = new FigureDialog("Figure Dialog", canvas);//agument설명은 FigureDialog클래스에
+            dialog.setModal(true);  //Modal Dialog를 사용하려면 flag변수 사용해서 true면 modal, false면 modaless
+            dialog.setVisible(true);
+        });
+
+        JMenuItem modalessTool = new JMenuItem("Modaless (S)");
+        toolMenu.add(modalessTool);
+        modalessTool.addActionListener((e) ->
+        {
+            FigureDialog dialog = new FigureDialog("Figure Dialog", canvas);
+            dialog.setModal(false);     //여기 setModal만 false로 만들면 modaless dialog
+            dialog.setVisible(true);
+
+        });
+
         //HelpMenu 작성시작
         JMenu helpMenu = new JMenu("도움말 (H)");
         menus.add(helpMenu);
