@@ -4,15 +4,15 @@ import java.awt.event.*;
 import java.awt.*;
 public class Box extends TwoPointFigure{
 
-    Box(){
-        super();
+    Box(Color color){
+        super(color);
     }
-    Box(int x, int y){
-        super(x, y);
+    Box(Color color, int x, int y){
+        super(color, x, y);
     }
 
-    Box(int x1, int y1, int x2, int y2) {
-        super(x1, y1, x2, y2);
+    Box(Color color, int x1, int y1, int x2, int y2) {
+        super(color, x1, y1, x2, y2);
     }
     void draw(Graphics g) {
         int minX = Math.min(x1, x2);
@@ -20,8 +20,16 @@ public class Box extends TwoPointFigure{
         int width = Math.abs(x2 - x1);
         int height = Math.abs(y2 - y1);
 
+        g.setColor(color);
         g.drawRect(minX, minY, width, height);
 
+    }
+    Figure copy() {
+        //upcasting 하위클래스 -> 상위클래스
+        Box newBox = new Box(color, x1, y1, x2, y2);
+        newBox.popup = popup;
+        newBox.move(MOVE_DX, MOVE_DY);
+        return newBox;
     }
 
 

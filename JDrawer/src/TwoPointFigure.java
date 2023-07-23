@@ -8,16 +8,16 @@ public abstract class TwoPointFigure extends Figure{
     protected int x2;
     protected int y2;
 
-    TwoPointFigure(){
-        super();
+    TwoPointFigure(Color color){
+        super(color);
     }
-    TwoPointFigure(int x, int y) {
-        super();
+    TwoPointFigure(Color color, int x, int y) {
+        super(color);
         x1 = x2 = x;
         y1 = y2 = y;
     }
-    TwoPointFigure(int x1, int y1, int x2, int y2) {
-        super();
+    TwoPointFigure(Color color, int x1, int y1, int x2, int y2) {
+        super(color);
         this.x1 = x1; this.y1 = y1; this.x2 = x2; this.y2 = y2;
     }
 

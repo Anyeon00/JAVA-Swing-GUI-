@@ -28,16 +28,31 @@ public class DrawerView extends JPanel      //이 판넬은 프레임에서 setW
     private ArrayList<Box> boxes = new ArrayList<Box>();
     private Line pLine;
     private ArrayList<Line> lines = new ArrayList<Line>();*/    //상속을 이용해 전부 Figure라는 객체로 처리
-    private Figure currentFigure;   //현재 작업중인 figure
+    private Figure selectedFigure;   //현재 작업중인 figure
+    private Color selectedColor;
     private ArrayList<Figure> figures = new ArrayList<Figure>();    //polymorphic container 다양한 걸 담는다
 
     private int currentX;   //마우스 drag할때 좌표값저장
     private int currentY;
+
+    Popup mainPopup;    //빈공간 우클릭
+    Popup boxPopup;     //도형 우클릭
+    Popup linePopup;
     DrawerView(){
+        mainPopup = new MainPopup(this);
+        boxPopup = new FigurePopup(this, "Box", true);   //이벤트핸들링을위해 this넘겨줌
+        boxPopup = new FigurePopup(this, "Line", false);    //Line은 채우기메뉴 false
+
         actionMode = NOTHING;
         whatToDraw = DRAW_BOX;
         addMouseListener(this);     //등록
         addMouseMotionListener(this);    //등록
+    }
+    Popup boxPopup(){
+        return boxPopup;
+    }
+    Popup linePopup(){
+        return linePopup;
     }
     void setWhatToDraw(int figureType) {
         whatToDraw = figureType;
@@ -61,26 +76,40 @@ public class DrawerView extends JPanel      //이 판넬은 프레임에서 setW
         int x = e.getX();
         int y = e.getY();
 
-        currentFigure = find(x, y); //figure객체 위에 마우스가 올라와있는가, 찾으면 해당객체, 못찾으면 null return
-        if (currentFigure != null) {    //마우스 커서가ㅏ figure객체를 찾은경우
+        if (e.getButton() == MouseEvent.BUTTON3) {  //우클릭은 버튼3
+            actionMode = NOTHING;
+            return;
+        }
+        selectedFigure = find(x, y); //figure객체 위에 마우스가 올라와있는가, 찾으면 해당객체, 못찾으면 null return
+        if (selectedFigure != null) {    //마우스 커서가ㅏ figure객체를 찾은경우
             actionMode = MOVING;
             currentX = x;   //Figure move하기전 이동시작위치 저장
             currentY = y;
-            figures.remove(currentFigure);  //움직인 자리에 새로 그린걸 생성해주므로 현재위치의 figure는 collection에서 제거
+            figures.remove(selectedFigure);  //움직인 자리에 새로 그린걸 생성해주므로 현재위치의 figure는 collection에서 제거
             repaint();
             return;
         }
         if (whatToDraw == DRAW_BOX) {   //프레임객체에서 setWhatToDraw함수로 받아와 저장해놓은 whatToDraw에 따라 그릴 그림결정
-            currentFigure = new Box(x, y);
+            selectedFigure = new Box(Color.BLACK, x, y);
+            selectedFigure.setPopup(boxPopup);
         } else if (whatToDraw == DRAW_LINE) {
-            currentFigure = new Line(x, y);
+            selectedFigure = new Line(Color.BLACK, x, y);
+            selectedFigure.setPopup(linePopup);
         }
         actionMode = DRAWING;
     }
     public void mouseReleased(MouseEvent e){    //Dragged와 마찬가지로 그리는모드랑 move모드 나눠서 실행
         int x = e.getX();
         int y = e.getY();
+
         if (e.isPopupTrigger()) {   //마우스 우클릭(popup기능)시 인가
+            selectedFigure = find(x, y);
+            if (selectedFigure == null) {
+                mainPopup.popup(this, x, y);
+            } else{
+                selectedFigure.popup(this, x, y);
+            }
+
             //1. 기본 방법
             /*JPopupMenu popupPtr;    //팝업메뉴창 생성
             popupPtr = new JPopupMenu("그림");
@@ -103,8 +132,8 @@ public class DrawerView extends JPanel      //이 판넬은 프레임에서 setW
             popupPtr.show(this, x, y);*/
 
             //2. Figure객체들이 공유하는 Popup클래스 이용하는 방법
-            MainPopup popup = new MainPopup(this);
-            popup.popup(this,x, y);  //Mainpopup객체 popup의 메서드인 popup실행 _우클릭 popup창 보이기
+            //MainPopup popup = new MainPopup(this); -> 매번 새로 mainpopup을 만들지 않고 데이터멤버화해서 사용
+            mainPopup.popup(this,x, y);  //Mainpopup객체 popup의 메서드인 popup실행 _우클릭 popup창 보이기
             //argument : popup창을 띄울 판넬 this, 띄울 마우스좌표 x, y
 
             return;
@@ -114,7 +143,7 @@ public class DrawerView extends JPanel      //이 판넬은 프레임에서 setW
              /* 함수화
         pBox.setX2(e.getX());
         pBox.setY2(e.getY());*/
-            currentFigure.setXY2(x, y);   //figure 객체의 x2, y2 access function(입력)
+            selectedFigure.setXY2(x, y);   //figure 객체의 x2, y2 access function(입력)
         }
          /*
             int minX = Math.min(boxes[i].x1, boxes[i].x2);
@@ -125,15 +154,57 @@ public class DrawerView extends JPanel      //이 판넬은 프레임에서 setW
             g.drawRect(minX, minY, width, height);
             여기까지 Box 그리는 행위를 Box의 Member Function으로 만들어주기
         */
-        currentFigure.draw(g);
-        currentFigure.makeRegion();
-        figures.add(currentFigure); //만든 Figure Collection객체에 넣기,   polymorphic collection객체
-        currentFigure = null;   //만든 객체 figures에 넣어줬으니까 현재 작업중인 currentFigure은 비워주기
+        selectedFigure.draw(g);
+        selectedFigure.makeRegion();
+        figures.add(selectedFigure); //만든 Figure Collection객체에 넣기,   polymorphic collection객체
+        selectedFigure = null;   //만든 객체 figures에 넣어줬으니까 현재 작업중인 selectedFigure은 비워주기
     }
     public void addFigure(Figure newFigure){    //dialog에서 만든 Figure 추가하는 함수
         newFigure.makeRegion();
         figures.add(newFigure);
         repaint();  //paint component함수 다시 실행해줌
+    }
+    public void copyFigure(){
+        if (selectedFigure == null) {
+            return;
+        } else{
+            Figure newFigure = selectedFigure.copy();
+            addFigure(newFigure);
+            selectedFigure = newFigure;
+            repaint();
+        }
+
+    }
+    public void deleteFigure(){
+        if (selectedFigure == null) {
+            return;
+        } else{
+            figures.remove(selectedFigure);
+            selectedFigure = null;
+            repaint();
+        }
+
+    }
+    void setColorForSelectedFigure(Color color){
+        if(selectedFigure.color == null) return;
+        selectedFigure.setColor(color);
+        repaint();
+    }
+    public void showColorChooser(){
+        Color color = JColorChooser.showDialog(null, "Color Chooser", Color.black);
+        setColorForSelectedFigure(color);
+    }
+    public void setBlackColor(){
+        setColorForSelectedFigure(Color.black);
+    }
+    public void setRedColor(){
+        setColorForSelectedFigure(Color.red);
+    }
+    public void setGreenColor(){
+        setColorForSelectedFigure(Color.green);
+    }
+    public void setBlueColor(){
+        setColorForSelectedFigure(Color.blue);
     }
     public void mouseEntered(MouseEvent e){}
     public void mouseExited(MouseEvent e){}
@@ -148,9 +219,9 @@ public class DrawerView extends JPanel      //이 판넬은 프레임에서 setW
         pBox.setXY2(e.getX(), e.getY());    //마우스 움직이자마자 x2,y2에 마우스의 새 좌표값 받아오기
         pBox.draw(g);   //저장돼있는 x1,y1과 새로받은 x2,y2로 그리기
         를 함수로 만들어 사용*/
-            currentFigure.drawing(g, x, y); //rubber banding 해서 그리는 함수
+            selectedFigure.drawing(g, x, y); //rubber banding 해서 그리는 함수
         } else if (actionMode == MOVING) {
-            currentFigure.move(g, x - currentX, y - currentY);
+            selectedFigure.move(g, x - currentX, y - currentY);
             currentX = x;
             currentY = y;
         }
@@ -193,8 +264,8 @@ public class DrawerView extends JPanel      //이 판넬은 프레임에서 setW
         int x = e.getX();
         int y = e.getY();
 
-        currentFigure = find(x, y);     //커서가 Figure객체 위에 올라갓는지 판단
-        if (currentFigure != null) {    //올라갔다면
+        selectedFigure = find(x, y);     //커서가 Figure객체 위에 올라갓는지 판단
+        if (selectedFigure != null) {    //올라갔다면
             setCursor(Cursor.getPredefinedCursor(Cursor.CROSSHAIR_CURSOR));
         }else{
 

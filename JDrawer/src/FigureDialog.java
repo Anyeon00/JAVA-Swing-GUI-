@@ -83,9 +83,11 @@ public class FigureDialog extends JDialog{  //DrawerFrame에서 MenuBar의 ToolB
             }
             Figure newFigure = null;
             if (selection.equals("Box")) {
-                newFigure = new Box(x1,y1,x2,y2);
+                newFigure = new Box(Color.BLACK, x1,y1,x2,y2);
+                newFigure.setPopup(view.boxPopup());
             } else if (selection.equals("Line")) {
-                newFigure = new Line(x1,y1,x2,y2);
+                newFigure = new Line(Color.BLACK, x1,y1,x2,y2);
+                newFigure.setPopup(view.linePopup());
             }else {}
             view.addFigure(newFigure);  //view : DrawerView 판넬 (생성자에서 argument로 받아옴), 받아온 판넬에 여기서 만든 그림 추가하기위해
             x1Field.setText("0");
