@@ -14,6 +14,7 @@ public abstract class Figure {
         this.color = color;
     }
 
+    void setFill(){}
     void setColor(Color color) {
         this.color = color;
         region = null;

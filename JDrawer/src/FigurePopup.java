@@ -44,6 +44,14 @@ public class FigurePopup extends Popup {  //도형우클릭시 생기는 popup
         });
         colorMenu.add(chooserItem);
 
+        if (fillFlag == true) {
+            JMenuItem fillItem = new JMenuItem("Fill");
+            fillItem.addActionListener((evt)-> {
+                view.fillFigure();
+            });
+            popupPtr.add(fillItem);
+
+        }
 
 
 

@@ -18,6 +18,12 @@ public class MainPopup extends Popup{    //Figure객체간 공유하는 우클�
         */      //이것도 위 클래스로 올리기
         super("그림");
 
+        JMenuItem pointItem = new JMenuItem("Point (P)");
+        popupPtr.add(pointItem);
+        pointItem.addActionListener((evt) ->{
+            view.setWhatToDraw(DrawerView.DRAW_POINT);
+        });
+
         JMenuItem boxItem = new JMenuItem("Box (B)");   //기능Item
         popupPtr.add(boxItem);
         boxItem.addActionListener((evt) ->{
@@ -28,6 +34,12 @@ public class MainPopup extends Popup{    //Figure객체간 공유하는 우클�
         popupPtr.add(lineItem);
         lineItem.addActionListener((evt) ->{
             view.setWhatToDraw(DrawerView.DRAW_LINE);
+        });
+
+        JMenuItem circleItem = new JMenuItem("Circle (C)");
+        popupPtr.add(circleItem);
+        circleItem.addActionListener((evt) ->{
+            view.setWhatToDraw(DrawerView.DRAW_CIRCLE);
         });
     }
 }

@@ -3,6 +3,7 @@ import java.awt.*;
 import java.awt.event.*;
 public class DrawerFrame extends JFrame {   //DRawerFrame 컴포넌트
     DrawerView canvas;    //JPanel 상속받아 만든 Panel객체
+    StatusBar statusBar;
     DrawerFrame(){
         setTitle("Drawer");
         Toolkit tk = Toolkit.getDefaultToolkit();   //컴포넌트사이즈 설정(고급자바내용)
@@ -17,7 +18,9 @@ public class DrawerFrame extends JFrame {   //DRawerFrame 컴포넌트
         //Panel생성
         Container container = new Container();  //Content Pane(Frame의 부속객체인 작업공간) 생성
         canvas = new DrawerView();    //Panel 생성
-        container.add(canvas);           //Content Pane에 Panel 붙이기
+        container.add(canvas,"Center");           //Content Pane에 Panel 붙이기
+        statusBar = new StatusBar();
+        container.add(statusBar, "South");
 
         //MenuBar - Menu - MenuItem
         JMenuBar menus = new JMenuBar();    //MenuBar 생성
@@ -70,6 +73,12 @@ public class DrawerFrame extends JFrame {   //DRawerFrame 컴포넌트
         JMenu figureMenu = new JMenu("그림 (F)");
         menus.add(figureMenu);
 
+        JMenuItem figurePoint = new JMenuItem("Point (P)");
+        figureMenu.add(figurePoint);
+        figurePoint.addActionListener((e) ->
+        {
+            canvas.setWhatToDraw(DrawerView.DRAW_POINT);
+        });
         JMenuItem figureBox = new JMenuItem("Box (B)");
         figureMenu.add(figureBox);
         figureBox.addActionListener((e) ->
@@ -81,6 +90,12 @@ public class DrawerFrame extends JFrame {   //DRawerFrame 컴포넌트
         figureBox.addActionListener((e) ->
         {
             canvas.setWhatToDraw(DrawerView.DRAW_LINE);
+        });
+        JMenuItem figureCircle = new JMenuItem("Circle (C)");
+        figureMenu.add(figureCircle);
+        figureCircle.addActionListener((e) ->
+        {
+            canvas.setWhatToDraw(DrawerView.DRAW_CIRCLE);
         });
         //figureMenu 작성완료
         //ToolMenu 작성시작     (dialog에서 좌표 입력해서 그리기)

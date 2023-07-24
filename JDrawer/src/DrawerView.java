@@ -13,8 +13,10 @@ public class DrawerView extends JPanel      //이 판넬은 프레임에서 setW
     int oldY;
 
      */
-    public static int DRAW_BOX = 1;
-    public static int DRAW_LINE = 2;
+    public static int DRAW_POINT = 1;
+    public static int DRAW_BOX = 2;
+    public static int DRAW_LINE = 3;
+    public static int DRAW_CIRCLE = 4;
 
     public static int NOTHING = 0;
     public static int DRAWING = 1;
@@ -36,17 +38,24 @@ public class DrawerView extends JPanel      //이 판넬은 프레임에서 setW
     private int currentY;
 
     Popup mainPopup;    //빈공간 우클릭
+    Popup pointPopup;
     Popup boxPopup;     //도형 우클릭
     Popup linePopup;
+    Popup circlePopup;
     DrawerView(){
         mainPopup = new MainPopup(this);
         boxPopup = new FigurePopup(this, "Box", true);   //이벤트핸들링을위해 this넘겨줌
-        boxPopup = new FigurePopup(this, "Line", false);    //Line은 채우기메뉴 false
+        linePopup = new FigurePopup(this, "Line", false);    //Line은 채우기메뉴 false
+        circlePopup = new FigurePopup(this, "Circle", true);
+        pointPopup = new FigurePopup(this, "Point", false);
 
         actionMode = NOTHING;
         whatToDraw = DRAW_BOX;
         addMouseListener(this);     //등록
         addMouseMotionListener(this);    //등록
+    }
+    Popup pointPopup(){
+        return pointPopup;
     }
     Popup boxPopup(){
         return boxPopup;
@@ -54,6 +63,8 @@ public class DrawerView extends JPanel      //이 판넬은 프레임에서 setW
     Popup linePopup(){
         return linePopup;
     }
+    Popup circlePopup(){ return circlePopup; }
+
     void setWhatToDraw(int figureType) {
         whatToDraw = figureType;
     }
@@ -89,12 +100,17 @@ public class DrawerView extends JPanel      //이 판넬은 프레임에서 setW
             repaint();
             return;
         }
-        if (whatToDraw == DRAW_BOX) {   //프레임객체에서 setWhatToDraw함수로 받아와 저장해놓은 whatToDraw에 따라 그릴 그림결정
+        if(whatToDraw == DRAW_POINT){
+            selectedFigure = new Point(Color.BLACK, x, y);
+            selectedFigure.setPopup(pointPopup);
+        } else if (whatToDraw == DRAW_BOX) {   //프레임객체에서 setWhatToDraw함수로 받아와 저장해놓은 whatToDraw에 따라 그릴 그림결정
             selectedFigure = new Box(Color.BLACK, x, y);
             selectedFigure.setPopup(boxPopup);
         } else if (whatToDraw == DRAW_LINE) {
             selectedFigure = new Line(Color.BLACK, x, y);
             selectedFigure.setPopup(linePopup);
+        } else if (whatToDraw == DRAW_CIRCLE) {
+            selectedFigure.setPopup(circlePopup);
         }
         actionMode = DRAWING;
     }
@@ -184,6 +200,19 @@ public class DrawerView extends JPanel      //이 판넬은 프레임에서 setW
             repaint();
         }
 
+    }
+    public void fillFigure(){
+        if (selectedFigure == null) {
+            return;
+        }
+/*
+        if (selectedFigure instanceof Box) {    //RTTI
+            Box pBox = (Box) selectedFigure;
+            pBox.setFill();
+        }
+*/
+        selectedFigure.setFill();
+        repaint();
     }
     void setColorForSelectedFigure(Color color){
         if(selectedFigure.color == null) return;

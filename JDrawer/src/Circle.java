@@ -1,18 +1,18 @@
-import java.awt.event.MouseEvent;
+import java.awt.*;
 import javax.swing.*;
 import java.awt.event.*;
-import java.awt.*;
-public class Box extends TwoPointFigure{
+
+public class Circle extends TwoPointFigure{
     private boolean fillFlag;
-    Box(Color color){
+    Circle(Color color){
         super(color);
         fillFlag = false;
     }
-    Box(Color color, int x, int y){
+    Circle(Color color, int x, int y){
         super(color, x, y);
     }
 
-    Box(Color color, int x1, int y1, int x2, int y2) {
+    Circle(Color color, int x1, int y1, int x2, int y2) {
         super(color, x1, y1, x2, y2);
     }
     void setFill(){
@@ -25,20 +25,21 @@ public class Box extends TwoPointFigure{
         int height = Math.abs(y2 - y1);
 
         g.setColor(color);
-        g.drawRect(minX, minY, width, height);
+        g.drawOval(minX, minY, width, height);
 
         if (fillFlag == true) {
-            g.fillRect(minX, minY, width, height);
+            g.fillOval(minX, minY, width, height);
         }
     }
     Figure copy() {
         //upcasting 하위클래스 -> 상위클래스
-        Box newBox = new Box(color, x1, y1, x2, y2);
-        newBox.popup = popup;
-        newBox.fillFlag = fillFlag;
-        newBox.move(MOVE_DX, MOVE_DY);
-        return newBox;
+        Circle newCirlce = new Circle(color, x1, y1, x2, y2);
+        newCirlce.popup = popup;
+        newCirlce.fillFlag = fillFlag;
+        newCirlce.move(MOVE_DX, MOVE_DY);
+        return newCirlce;
     }
+
 
 
 
