@@ -22,19 +22,19 @@ public class FigurePopup extends Popup {  //도형우클릭시 생기는 popup
         //PopupMenu속 Menu인 JMenu(colorMenu)에 MenuItem추가
         JMenuItem blackItem = new JMenuItem("Black");
         blackItem.addActionListener((evt)-> {
-            view.setBlackColor();
+            view.setColorForSelectedFigure(Color.black);
         });
         colorMenu.add(blackItem);
 
         JMenuItem redItem = new JMenuItem("Red");
         redItem.addActionListener((evt)-> {
-            view.setRedColor();
+            view.setColorForSelectedFigure(Color.red);
         });
         colorMenu.add(redItem);
 
         JMenuItem greenItem = new JMenuItem("Green");
         greenItem.addActionListener((evt)-> {
-            view.setGreenColor();
+            view.setColorForSelectedFigure(Color.green);
         });
         colorMenu.add(greenItem);
 

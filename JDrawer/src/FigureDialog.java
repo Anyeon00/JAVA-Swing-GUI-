@@ -16,7 +16,6 @@ public class FigureDialog extends JDialog{  //DrawerFrame에서 MenuBar의 ToolB
         JTextField x2Field;
         JTextField y2Field;
         JComboBox<String> box;
-        String[] figures = {"Point", "Box", "Line", "Circle"};
         JDialog dialog;     //이판넬을 생성시킨 dialog를 cancel버튼으로 종료시키기위해 parameter로 dialog를 받기 위한 멤버
         DrawerView view;    //그리고 이 판넬에서 만든 정보대로 DrawerView판넬에 그려야하므로 DrawerView를 받아옴
         DialogPanel(JDialog dialog, DrawerView view){   //둘다 아래의 dialog클래스로부터 넘겨받음, dialog클래스는 dialog를 호출한 곳에서 넘겨받음
@@ -53,7 +52,7 @@ public class FigureDialog extends JDialog{  //DrawerFrame에서 MenuBar의 ToolB
             add(y2Field);
 
 
-            JComboBox<String> box = new JComboBox<String>(figures);
+            JComboBox<String> box = new JComboBox<String>(view.figureType);
             add(box);
 
             JButton ok = new JButton("OK");
@@ -93,7 +92,7 @@ public class FigureDialog extends JDialog{  //DrawerFrame에서 MenuBar의 ToolB
                 newFigure.setPopup(view.linePopup());
             } else if (selection.equals("Circle")) {
                 newFigure = new Circle(Color.BLACK, x1, y1, x2, y2);
-                newFigure.setPopup(view.circlePopup);
+                newFigure.setPopup(view.circlePopup());
             }
             view.addFigure(newFigure);  //view : DrawerView 판넬 (생성자에서 argument로 받아옴), 받아온 판넬에 여기서 만든 그림 추가하기위해
             x1Field.setText("0");

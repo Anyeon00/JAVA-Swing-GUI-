@@ -6,6 +6,7 @@ public class StatusBar extends JPanel {
     JTextField position;    //마우스포지션
     JTextField figureType;  //그리고있는 도형
     JTextField viewSize;    //viewSize
+
     StatusBar(){
         setLayout(new BorderLayout());    //panel의 layout 바꾸기 _defalut값은 flow layout
         position = new JTextField("Position", 8);   //상태를 TextField를 이용해 출력
@@ -33,5 +34,14 @@ public class StatusBar extends JPanel {
 
         add(box1,"West");   //box를 statusBar에 붙이기
         add(box2, "East");
+    }
+    public void writePosition(String s) {
+        position.setText(s);
+    }
+    public void writeFigureType(String s) {
+        figureType.setText(s);
+    }
+    public void writeSize(String s) {   //frame의 크기가 바뀔때 호출, ComponentListener
+        viewSize.setText(s);
     }
 }

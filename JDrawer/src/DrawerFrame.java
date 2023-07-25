@@ -2,8 +2,16 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 public class DrawerFrame extends JFrame {   //DRawerFrame 컴포넌트
-    DrawerView canvas;    //JPanel 상속받아 만든 Panel객체
-    StatusBar statusBar;
+    DrawerView canvas;    //JPanel 상속받아 만든 Panel객체, main panel
+    StatusBar statusBar;    //statusBar panel
+
+    public void writePosition(String s) {   //statusBar에서 마우스포지션움직임나타내는데 사용
+        statusBar.writePosition(s); //view에서 구현할때 statusbar의 함수필요한데 frame객체를 거쳐서 사용
+    }
+
+    public void writeFigureType(String s) {
+        statusBar.writeFigureType(s);
+    }
     DrawerFrame(){
         setTitle("Drawer");
         Toolkit tk = Toolkit.getDefaultToolkit();   //컴포넌트사이즈 설정(고급자바내용)
@@ -17,10 +25,27 @@ public class DrawerFrame extends JFrame {   //DRawerFrame 컴포넌트
 
         //Panel생성
         Container container = new Container();  //Content Pane(Frame의 부속객체인 작업공간) 생성
-        canvas = new DrawerView();    //Panel 생성
+        statusBar = new StatusBar();        //StatusBar(panel)생성
+        container.add(statusBar, "South");  //Content Pane에 StatusBar(Panel) 붙이기
+        canvas = new DrawerView(this);    //Panel 생성, argument: writePosition함수 사용하기위해
         container.add(canvas,"Center");           //Content Pane에 Panel 붙이기
-        statusBar = new StatusBar();
-        container.add(statusBar, "South");
+
+        JToolBar selectToolBar = new JToolBar();    //툴바_AbstractAction인 SelectAction을 이용해 툴바에도 그림그리는 버튼만들기
+        selectToolBar.add(canvas.getPointAction());
+        selectToolBar.add(canvas.getBoxAction());
+        selectToolBar.add(canvas.getLineAction());
+        selectToolBar.add(canvas.getCircleAction());
+        container.add(selectToolBar, "North");
+
+        addComponentListener(new ComponentAdapter() {    //Component의 변화가 있을때 사용되는 listner
+            @Override
+            public void componentResized(ComponentEvent e) {
+                Dimension sz = canvas.getSize();    //component의 사이즈 알아오기
+                String s = "" + sz.width + " X " + sz.height + "px";
+                statusBar.writeSize(s);
+
+            }
+        });
 
         //MenuBar - Menu - MenuItem
         JMenuBar menus = new JMenuBar();    //MenuBar 생성
@@ -73,30 +98,22 @@ public class DrawerFrame extends JFrame {   //DRawerFrame 컴포넌트
         JMenu figureMenu = new JMenu("그림 (F)");
         menus.add(figureMenu);
 
-        JMenuItem figurePoint = new JMenuItem("Point (P)");
+        JMenuItem figurePoint = new JMenuItem(canvas.getPointAction());
         figureMenu.add(figurePoint);
-        figurePoint.addActionListener((e) ->
-        {
-            canvas.setWhatToDraw(DrawerView.DRAW_POINT);
-        });
-        JMenuItem figureBox = new JMenuItem("Box (B)");
+        /*JMenuItem figureBox = new JMenuItem("Box (B)");
         figureMenu.add(figureBox);
         figureBox.addActionListener((e) ->
         {
-            canvas.setWhatToDraw(DrawerView.DRAW_BOX);  //canvas는 Panel객체 레퍼런스(를상속받은class, DrawerView는 해당 판넬객체 클래스명(static member이므로)
-        });
-        JMenuItem figureLine = new JMenuItem("Line (L)");
+            canvas.setWhatToDraw(DrawerView.ID_BOX);  //canvas는 Panel객체 레퍼런스(를상속받은class, DrawerView는 해당 판넬객체 클래스명(static member이므로)
+        });*/   // Abstract Action 사용전
+        JMenuItem figureBox = new JMenuItem(canvas.getBoxAction());
+        figureMenu.add(figureBox);      //Abstract Action 사용후
+
+        JMenuItem figureLine = new JMenuItem(canvas.getLineAction());
         figureMenu.add(figureLine);
-        figureBox.addActionListener((e) ->
-        {
-            canvas.setWhatToDraw(DrawerView.DRAW_LINE);
-        });
-        JMenuItem figureCircle = new JMenuItem("Circle (C)");
+
+        JMenuItem figureCircle = new JMenuItem(canvas.getCircleAction());
         figureMenu.add(figureCircle);
-        figureCircle.addActionListener((e) ->
-        {
-            canvas.setWhatToDraw(DrawerView.DRAW_CIRCLE);
-        });
         //figureMenu 작성완료
         //ToolMenu 작성시작     (dialog에서 좌표 입력해서 그리기)
         JMenu toolMenu = new JMenu("도구 (T)");

@@ -1,7 +1,6 @@
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
-
 public class MainPopup extends Popup{    //Figure객체간 공유하는 우클릭시 Popup클래스
     /*
     DrawerView view;   //Popup창 띄울 판넬 _DrawerView
@@ -18,28 +17,28 @@ public class MainPopup extends Popup{    //Figure객체간 공유하는 우클�
         */      //이것도 위 클래스로 올리기
         super("그림");
 
-        JMenuItem pointItem = new JMenuItem("Point (P)");
+        JMenuItem pointItem = new JMenuItem(view.getPointAction());
         popupPtr.add(pointItem);
-        pointItem.addActionListener((evt) ->{
-            view.setWhatToDraw(DrawerView.DRAW_POINT);
-        });
 
+/*
         JMenuItem boxItem = new JMenuItem("Box (B)");   //기능Item
         popupPtr.add(boxItem);
         boxItem.addActionListener((evt) ->{
-            view.setWhatToDraw(DrawerView.DRAW_BOX);
+            view.setWhatToDraw(DrawerView.ID_BOX);
         });
+*/  //ActionAbstract사용전
+/*
+        JMenuItem boxItem = new JMenuItem(
+                new SelectAction("Box (B)", new ImageIcon("box.gif"), view, DrawerView.ID_BOX)
+        );
+*/  //ActionAbastract사용후 1차버전 아래는 완성
+        JMenuItem boxItem = new JMenuItem(view.getBoxAction());
+        popupPtr.add(boxItem);
 
-        JMenuItem lineItem = new JMenuItem("Line (L)");
+        JMenuItem lineItem = new JMenuItem(view.getLineAction());
         popupPtr.add(lineItem);
-        lineItem.addActionListener((evt) ->{
-            view.setWhatToDraw(DrawerView.DRAW_LINE);
-        });
 
-        JMenuItem circleItem = new JMenuItem("Circle (C)");
+        JMenuItem circleItem = new JMenuItem(view.getCircleAction());
         popupPtr.add(circleItem);
-        circleItem.addActionListener((evt) ->{
-            view.setWhatToDraw(DrawerView.DRAW_CIRCLE);
-        });
     }
 }
