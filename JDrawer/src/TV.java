@@ -1,22 +1,26 @@
-import java.awt.event.MouseEvent;
-import javax.swing.*;
-import java.awt.event.*;
 import java.awt.*;
-public class Box extends TwoPointFigure{
-    protected boolean fillFlag;
-    Box(Color color){
+
+public class TV extends TwoPointFigure {
+    private boolean fillFlag;
+    TV(Color color, boolean antennaFlag){
         super(color);
         fillFlag = false;
     }
-    Box(Color color, int x, int y){
+    TV(Color color, int x, int y, boolean antennaFlag){
         super(color, x, y);
     }
 
-    Box(Color color, int x1, int y1, int x2, int y2) {
+    TV(Color color, int x1, int y1, int x2, int y2, boolean antennaFlag) {
         super(color, x1, y1, x2, y2);
     }
     void setFill(){
         fillFlag = !fillFlag;
+    }
+    void pressPowerButton(){
+/*
+        screen.setFill();
+        powerButton.setFill();
+*/
     }
     void draw(Graphics g) {
         int minX = Math.min(x1, x2);
@@ -33,12 +37,13 @@ public class Box extends TwoPointFigure{
     }
     Figure copy() {
         //upcasting 하위클래스 -> 상위클래스
-        Box newBox = new Box(color, x1, y1, x2, y2);
+        TV newBox = new TV(color, x1, y1, x2, y2, true);
         newBox.popup = popup;
         newBox.fillFlag = fillFlag;
         newBox.move(MOVE_DX, MOVE_DY);
         return newBox;
     }
+
 
 
 

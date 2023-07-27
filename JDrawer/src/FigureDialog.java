@@ -15,7 +15,17 @@ public class FigureDialog extends JDialog{  //DrawerFrame에서 MenuBar의 ToolB
         JTextField y1Field;
         JTextField x2Field;
         JTextField y2Field;
+
         JComboBox<String> box;
+
+        JRadioButton blackButton;
+        JRadioButton redButton;
+        JRadioButton greenButton;
+        JRadioButton blueButton;
+        JRadioButton chooserButton;
+
+        Color color;
+
         JDialog dialog;     //이판넬을 생성시킨 dialog를 cancel버튼으로 종료시키기위해 parameter로 dialog를 받기 위한 멤버
         DrawerView view;    //그리고 이 판넬에서 만든 정보대로 DrawerView판넬에 그려야하므로 DrawerView를 받아옴
         DialogPanel(JDialog dialog, DrawerView view){   //둘다 아래의 dialog클래스로부터 넘겨받음, dialog클래스는 dialog를 호출한 곳에서 넘겨받음
@@ -55,6 +65,45 @@ public class FigureDialog extends JDialog{  //DrawerFrame에서 MenuBar의 ToolB
             JComboBox<String> box = new JComboBox<String>(view.figureType);
             add(box);
 
+            ButtonGroup group  = new ButtonGroup(); //radioButton을 묶어주는 그룹
+
+            blackButton = new JRadioButton("Black",true);
+            //blackButton.setBounds();  //위치매크로 안써서 주석처리해놓음
+            add(blackButton);
+            group.add(blackButton); //radio Button group에 추가
+            blackButton.addActionListener((evt)->{ //anonymousObject이용한 lamdaExpression
+                color = Color.black;
+            });
+            redButton = new JRadioButton("Red");
+            //blackButton.setBounds();  //위치매크로 안써서 주석처리해놓음
+            add(redButton);
+            group.add(redButton);
+            redButton.addActionListener((evt)->{
+                color = Color.red;
+            });
+            greenButton = new JRadioButton("Green");
+            //blackButton.setBounds();  //위치매크로 안써서 주석처리해놓음
+            add(greenButton);
+            group.add(greenButton);
+            greenButton.addActionListener((evt)->{
+                color = Color.green;
+            });
+            blueButton = new JRadioButton("Blue");
+            //blackButton.setBounds();  //위치매크로 안써서 주석처리해놓음
+            add(blueButton);
+            group.add(blueButton);
+            blueButton.addActionListener((evt)->{
+                color = Color.blue;
+            });
+            chooserButton = new JRadioButton("Chooser");
+            //blackButton.setBounds();  //위치매크로 안써서 주석처리해놓음
+            add(chooserButton);
+            group.add(chooserButton);
+            chooserButton.addActionListener((evt)->{
+                color = JColorChooser.showDialog(null, "Color selection", Color.black);
+            });
+
+
             JButton ok = new JButton("OK");
             add(ok);
             ok.addActionListener((ActionListener) this);    //이벤트핸들러를 생성자가 아닌 버튼에 추가하는 경우
@@ -82,17 +131,23 @@ public class FigureDialog extends JDialog{  //DrawerFrame에서 MenuBar의 ToolB
             }
             Figure newFigure = null;
             if (selection.equals("Point")) {
-                newFigure = new Point(Color.BLACK, x1,y1);
+                newFigure = new Point(color, x1,y1);
                 newFigure.setPopup(view.pointPopup());
             } else if (selection.equals("Box")) {
-                newFigure = new Box(Color.BLACK, x1,y1,x2,y2);
+                newFigure = new Box(color, x1,y1,x2,y2);
                 newFigure.setPopup(view.boxPopup());
             } else if (selection.equals("Line")) {
-                newFigure = new Line(Color.BLACK, x1,y1,x2,y2);
+                newFigure = new Line(color, x1,y1,x2,y2);
                 newFigure.setPopup(view.linePopup());
             } else if (selection.equals("Circle")) {
-                newFigure = new Circle(Color.BLACK, x1, y1, x2, y2);
+                newFigure = new Circle(color, x1, y1, x2, y2);
                 newFigure.setPopup(view.circlePopup());
+            } else if (selection.equals("TV")) {
+                newFigure = new TV(color, x1, y1,true);
+                newFigure.setPopup(view.tvPopup());
+            } else if (selection.equals("Kite")) {
+                newFigure = new Kite(color, x1, y1, x2, y2);
+                newFigure.setPopup(view.kitePopup());
             }
             view.addFigure(newFigure);  //view : DrawerView 판넬 (생성자에서 argument로 받아옴), 받아온 판넬에 여기서 만든 그림 추가하기위해
             x1Field.setText("0");
@@ -122,6 +177,7 @@ public class FigureDialog extends JDialog{  //DrawerFrame에서 MenuBar의 ToolB
         //이 Dialog에서 쓸 Panel 생성, 해당 panel에서 cancel시 이 dialog객체 종료시키기 위해 parameter로 이 dialog 넘겨줌
         JPanel panel = new DialogPanel(this,view);  //그리고 넘겨받은 메인 판넬을 다시 이 dialog판넬에 넘겨줌(dilog판넬이 그려서 메인판넬에 넘겨주기위해)
         container.add(panel);               //이 Dialog의 작업공간Container에 사용할 panel만든거 붙이기
+        setResizable(false);    //사용자가 dialog 크기조정불가
     }
 
 }

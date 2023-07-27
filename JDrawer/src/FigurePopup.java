@@ -4,6 +4,7 @@ import java.awt.event.*;
 public class FigurePopup extends Popup {  //도형우클릭시 생기는 popup
     FigurePopup(DrawerView view, String title, boolean fillFlag){
         super(title);
+        JPopupMenu popupPtr = new JPopupMenu(); //이유모름 오류때문에 추가해봄
 
         JMenuItem deleteItem = new JMenuItem("Delete");
         deleteItem.addActionListener((evt) -> {

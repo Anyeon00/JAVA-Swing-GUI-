@@ -16,6 +16,7 @@ public class MainPopup extends Popup{    //Figure객체간 공유하는 우클�
         popupPtr.addSeparator();
         */      //이것도 위 클래스로 올리기
         super("그림");
+        JPopupMenu popupPtr = new JPopupMenu();     //이유모름 오류때문에 여기서도 popupMenu 추가해봄
 
         JMenuItem pointItem = new JMenuItem(view.getPointAction());
         popupPtr.add(pointItem);
@@ -32,6 +33,7 @@ public class MainPopup extends Popup{    //Figure객체간 공유하는 우클�
                 new SelectAction("Box (B)", new ImageIcon("box.gif"), view, DrawerView.ID_BOX)
         );
 */  //ActionAbastract사용후 1차버전 아래는 완성
+
         JMenuItem boxItem = new JMenuItem(view.getBoxAction());
         popupPtr.add(boxItem);
 
@@ -40,5 +42,11 @@ public class MainPopup extends Popup{    //Figure객체간 공유하는 우클�
 
         JMenuItem circleItem = new JMenuItem(view.getCircleAction());
         popupPtr.add(circleItem);
+
+        JMenuItem tvItem = new JMenuItem(view.getTVAction());
+        popupPtr.add(tvItem);
+
+        JMenuItem kiteItem = new JMenuItem(view.getKiteAction());
+        popupPtr.add(kiteItem);
     }
 }

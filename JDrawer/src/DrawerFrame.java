@@ -4,6 +4,7 @@ import java.awt.event.*;
 public class DrawerFrame extends JFrame {   //DRawerFrame 컴포넌트
     DrawerView canvas;    //JPanel 상속받아 만든 Panel객체, main panel
     StatusBar statusBar;    //statusBar panel
+    FigureDialog dialog;
 
     public void writePosition(String s) {   //statusBar에서 마우스포지션움직임나타내는데 사용
         statusBar.writePosition(s); //view에서 구현할때 statusbar의 함수필요한데 frame객체를 거쳐서 사용
@@ -25,16 +26,40 @@ public class DrawerFrame extends JFrame {   //DRawerFrame 컴포넌트
 
         //Panel생성
         Container container = new Container();  //Content Pane(Frame의 부속객체인 작업공간) 생성
+
         statusBar = new StatusBar();        //StatusBar(panel)생성
         container.add(statusBar, "South");  //Content Pane에 StatusBar(Panel) 붙이기
+
         canvas = new DrawerView(this);    //Panel 생성, argument: writePosition함수 사용하기위해
-        container.add(canvas,"Center");           //Content Pane에 Panel 붙이기
+        JScrollPane sp = new JScrollPane(canvas);   //panel을 스크롤pane에 붙임(메인판넬을 붙인 스크롤바 판넬을 프레임에 다시 붙임)
+        /*container.add(canvas,"Center");           //Content Pane에 Panel 붙이기*/
+        container.add(sp, "Center");    //Content Pane에 메인panel을 붙인 스크롤바pane을 붙이기
+
+        //page down/page up키로 스크롤바 조종하는 기능만들기
+        sp.registerKeyboardAction(new ActionListener() {    //함수설명 10-2JscrollPane //lamdaExpression으로 써도됨
+                                      public void actionPerformed(ActionEvent evt) {
+                                          JScrollBar scrollBar = sp.getVerticalScrollBar();   //스크롤바 가지고 오기
+                                          scrollBar.setValue(scrollBar.getValue() + scrollBar.getBlockIncrement()); //스크롤바 움직이기
+                                      }
+                                  }
+	        , KeyStroke.getKeyStroke(KeyEvent.VK_PAGE_DOWN, 0)//pageDown키 눌럿을때
+            , JComponent.WHEN_IN_FOCUSED_WINDOW);//현재 작업중인창
+        sp.registerKeyboardAction(new ActionListener() {    //내리는 기능, 위에는 올리는 기능
+                                      public void actionPerformed(ActionEvent evt) {
+                                          JScrollBar scrollBar = sp.getVerticalScrollBar();
+                                          scrollBar.setValue(scrollBar.getValue() - scrollBar.getBlockIncrement()); //스크롤바 움직이기
+                                      }
+                                  }
+                , KeyStroke.getKeyStroke(KeyEvent.VK_PAGE_UP, 0)
+                , JComponent.WHEN_IN_FOCUSED_WINDOW);
 
         JToolBar selectToolBar = new JToolBar();    //툴바_AbstractAction인 SelectAction을 이용해 툴바에도 그림그리는 버튼만들기
         selectToolBar.add(canvas.getPointAction());
         selectToolBar.add(canvas.getBoxAction());
         selectToolBar.add(canvas.getLineAction());
         selectToolBar.add(canvas.getCircleAction());
+        selectToolBar.add(canvas.getTVAction());
+        selectToolBar.add(canvas.getKiteAction());
         container.add(selectToolBar, "North");
 
         addComponentListener(new ComponentAdapter() {    //Component의 변화가 있을때 사용되는 listner
@@ -114,6 +139,12 @@ public class DrawerFrame extends JFrame {   //DRawerFrame 컴포넌트
 
         JMenuItem figureCircle = new JMenuItem(canvas.getCircleAction());
         figureMenu.add(figureCircle);
+
+        JMenuItem figureTV= new JMenuItem(canvas.getTVAction());
+        figureMenu.add(figureTV);
+
+        JMenuItem figureKite= new JMenuItem(canvas.getKiteAction());
+        figureMenu.add(figureKite);
         //figureMenu 작성완료
         //ToolMenu 작성시작     (dialog에서 좌표 입력해서 그리기)
         JMenu toolMenu = new JMenu("도구 (T)");
@@ -123,7 +154,9 @@ public class DrawerFrame extends JFrame {   //DRawerFrame 컴포넌트
         toolMenu.add(modalTool);
         modalTool.addActionListener((e) ->
         {
-            FigureDialog dialog = new FigureDialog("Figure Dialog", canvas);//agument설명은 FigureDialog클래스에
+            if (dialog == null) {   //instanciation 중복으로 인한 메모리낭비를 막기 위해
+                dialog = new FigureDialog("Figure Dialog", canvas);//agument설명은 FigureDialog클래스에
+            }
             dialog.setModal(true);  //Modal Dialog를 사용하려면 flag변수 사용해서 true면 modal, false면 modaless
             dialog.setVisible(true);
         });
@@ -132,7 +165,9 @@ public class DrawerFrame extends JFrame {   //DRawerFrame 컴포넌트
         toolMenu.add(modalessTool);
         modalessTool.addActionListener((e) ->
         {
-            FigureDialog dialog = new FigureDialog("Figure Dialog", canvas);
+            if (dialog == null) {
+                FigureDialog dialog = new FigureDialog("Figure Dialog", canvas);
+            }
             dialog.setModal(false);     //여기 setModal만 false로 만들면 modaless dialog
             dialog.setVisible(true);
 

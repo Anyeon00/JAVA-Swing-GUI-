@@ -15,6 +15,12 @@ public class Circle extends TwoPointFigure{
     Circle(Color color, int x1, int y1, int x2, int y2) {
         super(color, x1, y1, x2, y2);
     }
+    boolean getFillFlag(){
+        return fillFlag;
+    }
+    void setFillFlag(boolean flag){
+        fillFlag = flag;
+    }
     void setFill(){
         fillFlag = !fillFlag;
     }

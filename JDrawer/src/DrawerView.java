@@ -13,12 +13,17 @@ public class DrawerView extends JPanel      //이 판넬은 프레임에서 setW
     int oldY;
 
      */
-    public String[] figureType = {"Point", "Box", "Line", "Circle"};
+    public String[] figureType = {"Point", "Box", "Line", "Circle", "TV", "Kite"};
+
+    public static int INIT_WIDTH = 3000;
+    public static int INIT_HEIGHT = 1500;
 
     public static int ID_POINT = 0;
     public static int ID_BOX = 1;
     public static int ID_LINE = 2;
     public static int ID_CIRCLE = 3;
+    public static int ID_TV = 4;
+    public static int ID_KITE = 5;
 
     public static int NOTHING = 0;
     public static int DRAWING = 1;
@@ -45,14 +50,22 @@ public class DrawerView extends JPanel      //이 판넬은 프레임에서 setW
     private Popup boxPopup;     //도형 우클릭
     private Popup linePopup;
     private Popup circlePopup;
+    private Popup tvPopup;
+    private Popup kitePopup;
 
     private SelectAction pointAction;
     private SelectAction boxAction;
     private SelectAction lineAction;
     private SelectAction circleAction;
+    private SelectAction TVAction;
+    private SelectAction kiteAction;
 
 
     private DrawerFrame mainFrame;
+
+    private int width = INIT_WIDTH;
+    private int height = INIT_HEIGHT;
+
     DrawerView(DrawerFrame mainFrame){
         this.mainFrame = mainFrame;
 
@@ -60,18 +73,24 @@ public class DrawerView extends JPanel      //이 판넬은 프레임에서 setW
         boxAction = new SelectAction("Box (B)", new ImageIcon("box.gif"), this, ID_BOX);
         lineAction = new SelectAction("Line (L)", new ImageIcon("box.gif"), this, ID_LINE);
         circleAction = new SelectAction("Circle (C)", new ImageIcon("box.gif"), this, ID_CIRCLE);
+        TVAction = new SelectAction("TV (T)", new ImageIcon("box.gif"), this, ID_TV);
+        kiteAction = new SelectAction("Kite (K)", new ImageIcon("box.gif"), this, ID_KITE);
 
         mainPopup = new MainPopup(this);
         boxPopup = new FigurePopup(this, "Box", true);   //이벤트핸들링을위해 this넘겨줌
         linePopup = new FigurePopup(this, "Line", false);    //Line은 채우기메뉴 false
         circlePopup = new FigurePopup(this, "Circle", true);
         pointPopup = new FigurePopup(this, "Point", false);
+        tvPopup = new TVPopup(this);
+        kitePopup = new FigurePopup(this, "Kite", true);
 
 
         actionMode = NOTHING;
         setWhatToDraw(ID_BOX);
         addMouseListener(this);     //등록
         addMouseMotionListener(this);    //등록
+
+        setPreferredSize(new Dimension(width,height)); //스크롤바 생성을 위한 Panel의 논리적크기 명시
     }
     SelectAction getPointAction(){
         return pointAction;
@@ -85,6 +104,12 @@ public class DrawerView extends JPanel      //이 판넬은 프레임에서 setW
     SelectAction getCircleAction(){
         return circleAction;
     }
+    SelectAction getTVAction(){
+        return TVAction;
+    }
+    SelectAction getKiteAction(){
+        return kiteAction;
+    }
     Popup pointPopup(){
         return pointPopup;
     }
@@ -95,6 +120,8 @@ public class DrawerView extends JPanel      //이 판넬은 프레임에서 setW
         return linePopup;
     }
     Popup circlePopup(){ return circlePopup; }
+    Popup tvPopup(){ return tvPopup; }
+    Popup kitePopup(){ return kitePopup; }
 
     void setWhatToDraw(int id) {
         whatToDraw = id;
@@ -142,7 +169,18 @@ public class DrawerView extends JPanel      //이 판넬은 프레임에서 setW
             selectedFigure = new Line(Color.BLACK, x, y);
             selectedFigure.setPopup(linePopup);
         } else if (whatToDraw == ID_CIRCLE) {
+            selectedFigure = new Circle(Color.BLACK, x, y);
             selectedFigure.setPopup(circlePopup);
+        } else if (whatToDraw == ID_TV) {
+            selectedFigure = new TV(Color.BLACK, x, y, true);
+            selectedFigure.setPopup(tvPopup);
+            addFigure(selectedFigure);
+            return;
+        } else if (whatToDraw == ID_KITE) {
+            selectedFigure = new Kite(Color.BLACK, x, y);
+            selectedFigure.setPopup(kitePopup);
+            addFigure(selectedFigure);
+            return;
         }
         actionMode = DRAWING;
     }
@@ -255,6 +293,15 @@ public class DrawerView extends JPanel      //이 판넬은 프레임에서 setW
         Color color = JColorChooser.showDialog(null, "Color Chooser", Color.black);
         setColorForSelectedFigure(color);
     }
+    public void onOffTV(){
+        if(selectedFigure == null) return;
+        if (selectedFigure instanceof TV) {
+            TV tv = (TV)selectedFigure;
+            tv.pressPowerButton();
+            repaint();
+        }
+    }
+    public void setAntenna(){}
     public void mouseEntered(MouseEvent e){}
     public void mouseExited(MouseEvent e){}
     public void mouseDragged(MouseEvent e) {    //마우스 drag할떼 그림그리는경우, figure 옮기는 경우
