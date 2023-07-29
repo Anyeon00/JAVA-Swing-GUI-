@@ -53,6 +53,18 @@ public abstract class Figure {
         setXY2(newX, newY);
         draw(g);
     }
+    int getX1(){
+        return -1;
+    }
+    int getY1(){
+        return -1;
+    }
+    int getX2(){
+        return -1;
+    }
+    int getY2(){
+        return -1;
+    }
 
 
 }

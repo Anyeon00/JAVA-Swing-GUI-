@@ -92,6 +92,9 @@ public class DrawerView extends JPanel      //이 판넬은 프레임에서 setW
 
         setPreferredSize(new Dimension(width,height)); //스크롤바 생성을 위한 Panel의 논리적크기 명시
     }
+    public ArrayList<Figure> getFigures(){
+        return figures;
+    }
     SelectAction getPointAction(){
         return pointAction;
     }
@@ -244,6 +247,10 @@ public class DrawerView extends JPanel      //이 판넬은 프레임에서 setW
         selectedFigure.makeRegion();
         figures.add(selectedFigure); //만든 Figure Collection객체에 넣기,   polymorphic collection객체
         selectedFigure = null;   //만든 객체 figures에 넣어줬으니까 현재 작업중인 selectedFigure은 비워주기
+    }
+    public void remove(int index){
+        figures.remove(index);
+        repaint();
     }
     public void addFigure(Figure newFigure){    //dialog에서 만든 Figure 추가하는 함수
         newFigure.makeRegion();

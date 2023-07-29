@@ -5,6 +5,8 @@ public class DrawerFrame extends JFrame {   //DRawerFrame 컴포넌트
     DrawerView canvas;    //JPanel 상속받아 만든 Panel객체, main panel
     StatusBar statusBar;    //statusBar panel
     FigureDialog dialog;
+    TableDialog tableDialog;
+    TreeDialog treeDialog;
 
     public void writePosition(String s) {   //statusBar에서 마우스포지션움직임나타내는데 사용
         statusBar.writePosition(s); //view에서 구현할때 statusbar의 함수필요한데 frame객체를 거쳐서 사용
@@ -156,8 +158,8 @@ public class DrawerFrame extends JFrame {   //DRawerFrame 컴포넌트
         {
             if (dialog == null) {   //instanciation 중복으로 인한 메모리낭비를 막기 위해
                 dialog = new FigureDialog("Figure Dialog", canvas);//agument설명은 FigureDialog클래스에
+                dialog.setModal(true);  //Modal Dialog를 사용하려면 flag변수 사용해서 true면 modal, false면 modaless
             }
-            dialog.setModal(true);  //Modal Dialog를 사용하려면 flag변수 사용해서 true면 modal, false면 modaless
             dialog.setVisible(true);
         });
 
@@ -167,10 +169,31 @@ public class DrawerFrame extends JFrame {   //DRawerFrame 컴포넌트
         {
             if (dialog == null) {
                 FigureDialog dialog = new FigureDialog("Figure Dialog", canvas);
+                dialog.setModal(false);     //여기 setModal만 false로 만들면 modaless dialog
             }
-            dialog.setModal(false);     //여기 setModal만 false로 만들면 modaless dialog
             dialog.setVisible(true);
 
+        });
+        JMenuItem tableTool = new JMenuItem("Table (T)");
+        toolMenu.add(tableTool);
+        tableTool.addActionListener((e) ->
+        {
+            if (tableDialog == null) {
+                tableDialog = new TableDialog("Table Dialog", canvas);
+                tableDialog.setModal(false);     //여기 setModal만 false로 만들면 modaless dialog
+            }
+            tableDialog.setVisible(true);
+        });
+
+        JMenuItem treeTool = new JMenuItem("Tree (R)");
+        toolMenu.add(treeTool);
+        treeTool.addActionListener((e) ->
+        {
+            if (treeDialog == null) {
+                treeDialog = new TreeDialog("Tree Dialog", canvas);
+                treeDialog.setModal(false);     //여기 setModal만 false로 만들면 modaless dialog
+            }
+            treeDialog.setVisible(true);
         });
 
         //HelpMenu 작성시작
