@@ -13,7 +13,7 @@ public class DrawerView extends JPanel      //이 판넬은 프레임에서 setW
     int oldY;
 
      */
-    public String[] figureType = {"Point", "Box", "Line", "Circle", "TV", "Kite"};
+    public static String[] figureType = {"Point", "Box", "Line", "Circle", "TV", "Kite"};
 
     public static int INIT_WIDTH = 3000;
     public static int INIT_HEIGHT = 1500;
@@ -62,6 +62,8 @@ public class DrawerView extends JPanel      //이 판넬은 프레임에서 setW
 
 
     private DrawerFrame mainFrame;
+
+    private double zoomRatio = 1.0;
 
     private int width = INIT_WIDTH;
     private int height = INIT_HEIGHT;
@@ -135,6 +137,7 @@ public class DrawerView extends JPanel      //이 판넬은 프레임에서 setW
     public void paintComponent(Graphics g) {    //많이쓰이는 이벤트핸들러라서 인터페이스로 존재하지않고 상위클래스에 있음
         super.paintComponent(g);    //paintComponent함수 이용할때 반드시 써줘야함
 
+        ((Graphics2D)g).scale(zoomRatio,zoomRatio);
         /*Box[] arr = (Box[])boxes.toArray(); //ArrayList를 array로 바꾸기
         for (int i = 0; i < arr.length; i++) {  // Collection객체 boxes에 저장된 box만큼 반복해서 draw()실행
             arr[i].draw(g);
@@ -144,8 +147,19 @@ public class DrawerView extends JPanel      //이 판넬은 프레임에서 setW
         }
 
     }
+    public void zoom(int ratio){    //툴바 줌기능
+        zoomRatio = (double) ratio / 100.0;
+        repaint();
+        removeMouseListener(this    );      //zoom기능으로 화면비율 변경시 이벤트핸들링 불가조치
+        removeMouseMotionListener(this    );
+        if (ratio == 100) {
+            addMouseListener(this);
+            addMouseMotionListener(this    );
+        }
+    }
     public void mouseClicked(MouseEvent e){    }
     public void mousePressed(MouseEvent e) {// 빈화면에서 눌렀을때: 그림그리기, 그림위에서 눌렀을때 move
+        if(zoomRatio != 1.0) return;
         int x = e.getX();
         int y = e.getY();
 
@@ -178,6 +192,8 @@ public class DrawerView extends JPanel      //이 판넬은 프레임에서 setW
             selectedFigure = new TV(Color.BLACK, x, y, true);
             selectedFigure.setPopup(tvPopup);
             addFigure(selectedFigure);
+            selectedFigure = null;
+            actionMode = NOTHING;
             return;
         } else if (whatToDraw == ID_KITE) {
             selectedFigure = new Kite(Color.BLACK, x, y);
@@ -227,6 +243,7 @@ public class DrawerView extends JPanel      //이 판넬은 프레임에서 setW
 
             return;
         }
+        if(selectedFigure == null) return;
         Graphics g = getGraphics();
         if (actionMode == DRAWING) {
              /* 함수화
@@ -248,7 +265,12 @@ public class DrawerView extends JPanel      //이 판넬은 프레임에서 setW
         figures.add(selectedFigure); //만든 Figure Collection객체에 넣기,   polymorphic collection객체
         selectedFigure = null;   //만든 객체 figures에 넣어줬으니까 현재 작업중인 selectedFigure은 비워주기
     }
+    public void remove(Figure ptr){
+        figures.remove(ptr);
+        repaint();
+    }
     public void remove(int index){
+        if(index < 0) return;
         figures.remove(index);
         repaint();
     }

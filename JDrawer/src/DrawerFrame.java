@@ -2,6 +2,22 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 public class DrawerFrame extends JFrame {   //DRawerFrame 컴포넌트
+    static class ZoomBox extends JComboBox implements ActionListener{   //툴바에서 사용하는 콤보박스에서 사용하려고 만든 이너클래스
+        DrawerView canvas;
+        static String[] size = {"100", "80", "50"};
+        ZoomBox(DrawerView canvas){
+            super();
+            this.canvas = canvas;
+            setMaximumSize(new Dimension(1000,200));
+            addActionListener(this);
+        }
+        public void actionPerformed(ActionEvent e) {
+            JComboBox box = (JComboBox) e.getSource();
+            String ratio = (String) box.getSelectedItem();
+            canvas.zoom(Integer.parseInt(ratio));
+        }
+
+    }
     DrawerView canvas;    //JPanel 상속받아 만든 Panel객체, main panel
     StatusBar statusBar;    //statusBar panel
     FigureDialog dialog;
@@ -62,7 +78,9 @@ public class DrawerFrame extends JFrame {   //DRawerFrame 컴포넌트
         selectToolBar.add(canvas.getCircleAction());
         selectToolBar.add(canvas.getTVAction());
         selectToolBar.add(canvas.getKiteAction());
-        container.add(selectToolBar, "North");
+        selectToolBar.add(new ZoomBox(canvas));
+        selectToolBar.add(javax.swing.Box.createGlue());
+        container.add(selectToolBar, BorderLayout.NORTH);
 
         addComponentListener(new ComponentAdapter() {    //Component의 변화가 있을때 사용되는 listner
             @Override
@@ -194,6 +212,28 @@ public class DrawerFrame extends JFrame {   //DRawerFrame 컴포넌트
                 treeDialog.setModal(false);     //여기 setModal만 false로 만들면 modaless dialog
             }
             treeDialog.setVisible(true);
+        });
+
+        JMenu zoomMenu = new JMenu("Zoom");
+        toolMenu.add(zoomMenu);
+
+        JMenuItem zoom100 = new JMenuItem("100%");
+        zoomMenu.add(zoom100);
+        zoom100.addActionListener((e) -> {
+            canvas.zoom(100);
+        });
+
+        JMenuItem zoom80 = new JMenuItem("80%");
+        zoomMenu.add(zoom80);
+        zoom100.addActionListener((e) -> {
+            canvas.zoom(80);
+        });
+
+
+        JMenuItem zoom50 = new JMenuItem("50%");
+        zoomMenu.add(zoom50);
+        zoom100.addActionListener((e) -> {
+            canvas.zoom(50);
         });
 
         //HelpMenu 작성시작

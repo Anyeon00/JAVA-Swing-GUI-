@@ -6,7 +6,7 @@ import java.awt.event.*;
 import java.util.*;
 
 class TreeDialog extends JDialog {
-    static class MyTreeNode {
+    static class MyTreeNode {   //자료구조 tree 구현 클래스
         Object userObject;
         ArrayList<MyTreeNode> children;
         MyTreeNode(Object data) {
@@ -47,7 +47,7 @@ class TreeDialog extends JDialog {
             figures = view.getFigures();
             constructTree();
         }
-        public void constructTree() {
+        public void constructTree() {       //자료구조 트리에 figure넣기
             root = new MyTreeNode("Figure");
             ArrayList<String> names = new ArrayList<String>();
             int length = DrawerView.figureType.length;
@@ -149,7 +149,7 @@ class TreeDialog extends JDialog {
                 Object selectedObject = selectedNode.getUserObject();
                 if (selectedObject instanceof Figure)
                 {
-                    view.removeFromFigures((Figure)selectedObject);
+                    view.remove((Figure)selectedObject);
                     updateUI();
                 }
             }
