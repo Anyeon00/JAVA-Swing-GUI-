@@ -1,6 +1,10 @@
 import javax.swing.*;
+import javax.swing.filechooser.FileNameExtensionFilter;
 import java.awt.*;
 import java.awt.event.*;
+import java.io.FileOutputStream;
+import java.io.ObjectOutputStream;
+
 public class DrawerFrame extends JFrame {   //DRawerFrame 컴포넌트
     static class ZoomBox extends JComboBox implements ActionListener{   //툴바에서 사용하는 콤보박스에서 사용하려고 만든 이너클래스
         DrawerView canvas;
@@ -23,7 +27,7 @@ public class DrawerFrame extends JFrame {   //DRawerFrame 컴포넌트
     FigureDialog dialog;
     TableDialog tableDialog;
     TreeDialog treeDialog;
-
+    String fileName = "noname.jdr"; //파일 save할떄 저장할 이름
     public void writePosition(String s) {   //statusBar에서 마우스포지션움직임나타내는데 사용
         statusBar.writePosition(s); //view에서 구현할때 statusbar의 함수필요한데 frame객체를 거쳐서 사용
     }
@@ -31,6 +35,30 @@ public class DrawerFrame extends JFrame {   //DRawerFrame 컴포넌트
     public void writeFigureType(String s) {
         statusBar.writeFigureType(s);
     }
+    public void doOpen(){   //Save한 파일 Load해서 Open하기
+        JFileChooser chooser = new JFileChooser(System.getProperty("user.dir"));    //chooser라는 dialog생성
+        chooser.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);   //chooser속성 file,directory select할수잇고
+        chooser.setDialogType(JFileChooser.OPEN_DIALOG);                //open dialog방식
+        chooser.setFileFilter(new FileNameExtensionFilter("JDrawer file", "jdr"));  //JDrawer파일들이다, extension은 jdr 로 필터링
+        int value = chooser.showOpenDialog(null);   // dialog show
+        if( value != JFileChooser.APPROVE_OPTION) return;   //return버튼이 ok버튼이어야지
+        fileName = chooser.getSelectedFile().getPath();     //file이름 얻어오기
+        canvas.doOpen(fileName);
+    }
+    public void doSaveAs(){   //다른이름으로 저장
+        JFileChooser chooser = new JFileChooser(System.getProperty("user.dir"));    //chooser라는 dialog생성
+        chooser.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);   //chooser속성 file,directory select할수잇고
+        chooser.setDialogType(JFileChooser.SAVE_DIALOG);                //open dialog방식
+        chooser.setFileFilter(new FileNameExtensionFilter("JDrawer file", "jdr"));  //JDrawer파일들이다, extension은 jdr 로 필터링
+        int value = chooser.showSaveDialog(null);   // dialog show
+        if( value != JFileChooser.APPROVE_OPTION) return;   //return버튼이 ok버튼이어야지
+        fileName = chooser.getSelectedFile().getPath();     //file이름 얻어오기
+        if (fileName.endsWith(".jdr") == false) {
+            fileName = fileName + ".jdr";
+        }
+        canvas.doOpen(fileName);
+    }
+
     DrawerFrame(){
         setTitle("Drawer");
         Toolkit tk = Toolkit.getDefaultToolkit();   //컴포넌트사이즈 설정(고급자바내용)
@@ -112,20 +140,25 @@ public class DrawerFrame extends JFrame {   //DRawerFrame 컴포넌트
             }
         });
 
-        JMenuItem openFile = new JMenuItem("열기 (O)");
+        JMenuItem openFile = new JMenuItem("열기 (O)");   //저장한 파일 불러오기
         fileMenu.add(openFile);
         openFile.addActionListener( (e) ->     //새파일 버튼 클릭시, 람다 익스프레션 2_위 newFile(MenuItem)에서
                         // 이미 ActionListener인터페이스와 actionPerformed함수를 사용했기 때문에 해당 문법으로 재사용
                 {
-                    System.out.println("열기 (O)");
-                    System.out.println("Hello");
+                    doOpen();
                 }
         );
 
         JMenuItem saveFile = new JMenuItem("저장 (S)");
+        saveFile.addActionListener( (e) -> {
+            canvas.doSave(fileName);
+        });
         fileMenu.add(saveFile);
 
         JMenuItem anotherFile = new JMenuItem("다른 이름으로 저장(A)");
+        anotherFile.addActionListener((e) -> {
+            doSaveAs();
+        });
         fileMenu.add(anotherFile);
 
         fileMenu.addSeparator();    //구분선 추가

@@ -2,6 +2,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 import java.util.*;
+import java.io.*;
 
 public class DrawerView extends JPanel      //이 판넬은 프레임에서 setWhatToDraw함수로 뭐그릴지 받아와서 해당 객체를 그림
         implements MouseListener, MouseMotionListener{      //JDrawer같은 큰 프로젝트의 경우 함수를 다 사용할 여지가 있음
@@ -131,6 +132,31 @@ public class DrawerView extends JPanel      //이 판넬은 프레임에서 setW
     void setWhatToDraw(int id) {
         whatToDraw = id;
         mainFrame.writeFigureType(figureType[id]);
+    }
+
+    public void doOpen(String fileName){   // 파일 Load해서 open하기
+        try {
+            FileInputStream fis = new FileInputStream(fileName);
+            ObjectInputStream ois = new ObjectInputStream(fis);
+            //자료구조에 load
+            figures = (ArrayList<Figure>) (ois.readObject()); //readObject의 return type은 default로 Object -> typeCasting
+            ois.close();
+            fis.close();
+            repaint();
+        } catch (IOException ex) {
+        } catch (ClassNotFoundException ex) {
+        }
+    }
+    public void doSave(String fileName){   // 파일 save하기
+        try {
+            FileOutputStream fos = new FileOutputStream(fileName);  // 1.파일이름으로부터 파일 outputStream만들기
+            ObjectOutputStream oos = new ObjectOutputStream(fos);   //2. fileOutputStreame을 ObjectOutputStream으로 변환
+            oos.writeObject(figures);  // 가장 핵심적인 정보 저장 ( 이 app에서는 FigureList figures)
+            oos.flush();
+            oos.close();
+            fos.close();
+        } catch (IOException ex) {  //예외처리해줘야함
+        }
     }
 
     //paint event (화면이 나타나거나 갱신될때마다 호출되는 핸들러)
